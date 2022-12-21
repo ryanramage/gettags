@@ -4,7 +4,7 @@ main.c
 Copyright (c)2012-2018 Kevin Boone
 Distributed under the terms of the GNU Public Licence, v3.0
 ==========================================================================*/
-  
+
 #include <stdio.h>
 #include <getopt.h>
 #include <string.h>
@@ -90,10 +90,10 @@ const char *get_ext_from_mime (const char *mime)
 /*
  * extract_cover
  * Writes the cover image, if any, to a file whose name is made from
- * the specified filename, plus an extension appropriate for the 
+ * the specified filename, plus an extension appropriate for the
  * type of the cover image.
  */
-void extract_cover (const char *argv0, const TagData *tag_data, 
+void extract_cover (const char *argv0, const TagData *tag_data,
     const char *cover_filename, BOOL script)
   {
   if (tag_data->cover)
@@ -112,18 +112,18 @@ void extract_cover (const char *argv0, const TagData *tag_data,
         }
       else
         {
-        printf ("%s%s: can't open file for writing: %s (%s)\n", 
+        printf ("%s%s: can't open file for writing: %s (%s)\n",
           make_prefix (FALSE, script), argv0, cover_filename, strerror (errno));
         }
       }
     else
       {
-      printf ("%s%s: cover image found, but file type is unknown\n", 
+      printf ("%s%s: cover image found, but file type is unknown\n",
         make_prefix (FALSE, script), argv0);
       }
     }
-  else 
-    printf ("%s%s: no cover image found\n", 
+  else
+    printf ("%s%s: no cover image found\n",
       make_prefix (FALSE, script), argv0);
   }
 
@@ -132,51 +132,30 @@ void extract_cover (const char *argv0, const TagData *tag_data,
 do_file
 Process a file, according to the specified command-line arguments
 */
-void do_file (const char *argv0, const char *filename, BOOL script, 
+void do_file (const char *argv0, const char *filename, BOOL script,
     TagCommonID common_id, const char *exact_name, BOOL common_only,
       const char *cover_filename)
   {
-  TagData *tag_data = NULL; 
+  TagData *tag_data = NULL;
   TagResult r = tag_get_tags (filename, &tag_data);
   switch (r)
     {
-    case TAG_READERROR: 
-      fprintf (stderr, "%s%s: Can't read file '%s'\n", 
-        make_prefix(FALSE, script), argv0, filename);
-      break;
-    case TAG_TRUNCATED:
-      fprintf (stderr, "%s%s, Tag data is incomplete in '%s'\n", 
-        make_prefix(FALSE, script), argv0, filename);
-      break;
-    case TAG_OUTOFMEMORY:
-      fprintf (stderr, "%s%s: Out of memory processing file '%s'\n", 
-        make_prefix(FALSE, script), argv0, filename);
-      break;
-    case TAG_UNSUPFORMAT:
-    case TAG_NOID3V2:
-    case TAG_NOVORBIS:
-      fprintf (stderr, "%s%s: Unsupported tag format or no tags in file "
-       "'%s'\n", 
-        make_prefix(FALSE, script), argv0, filename);
-      break;
     case TAG_OK:
       {
       // Only if we get here should we proceed
       if (strlen (cover_filename) > 0)
         {
-        extract_cover (argv0, tag_data, cover_filename, script); 
+        extract_cover (argv0, tag_data, cover_filename, script);
         }
       else if (strlen (exact_name) > 0)
         {
         const char *s = (char *)tag_get_by_id (tag_data, exact_name);
         if (s)
           printf ("%s%s\n", make_prefix(TRUE, script), s);
-        else
-          printf ("%sTag not found\n", make_prefix(FALSE, script));
         }
       else if (common_id != -1)
         {
-        const unsigned char *s = tag_get_common 
+        const unsigned char *s = tag_get_common
           (tag_data, common_id);
         if (s)
           printf ("%s%s\n", make_prefix(TRUE, script), s);
@@ -188,31 +167,31 @@ void do_file (const char *argv0, const char *filename, BOOL script,
         if (script) printf ("OK\n");
         if (common_only)
           {
-          const unsigned char *s = tag_get_common 
+          const unsigned char *s = tag_get_common
             (tag_data, TAG_COMMON_ALBUM);
           if (s) printf ("%s %s\n", "album", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_ARTIST);
           if (s) printf ("%s %s\n", "artist", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_ALBUM_ARTIST);
           if (s) printf ("%s %s\n", "album-artist", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_COMMENT);
           if (s) printf ("%s %s\n", "comment", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_COMPOSER);
           if (s) printf ("%s %s\n", "composer", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_DATE);
           if (s) printf ("%s %s\n", "date", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_GENRE);
           if (s) printf ("%s %s\n", "genre", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_TITLE);
           if (s) printf ("%s %s\n", "title", s);
-          s = tag_get_common 
+          s = tag_get_common
             (tag_data, TAG_COMMON_TRACK);
           if (s) printf ("%s %s\n", "track", s);
           }
@@ -229,7 +208,7 @@ void do_file (const char *argv0, const char *filename, BOOL script,
       }
       break;
     default:
-      fprintf (stderr, "%s%s: Internal error processing file '%s'\n", 
+      fprintf (stderr, "%s%s: Internal error processing file '%s'\n",
         make_prefix(FALSE, script), argv0, filename);
     }
   tag_free_tag_data (tag_data);
@@ -243,17 +222,17 @@ Maps human-readable tag names to constants defined in the header file
 */
 TagCommonID common_name_to_common_id (const char *common_name)
   {
-  if (strcmp (common_name, "album") == 0)  return TAG_COMMON_ALBUM; 
-  if (strcmp (common_name, "album-artist") == 0)  
-    return TAG_COMMON_ALBUM_ARTIST; 
-  if (strcmp (common_name, "artist") == 0)  return TAG_COMMON_ARTIST; 
-  if (strcmp (common_name, "comment") == 0) return TAG_COMMON_COMMENT; 
-  if (strcmp (common_name, "composer") == 0)  return TAG_COMMON_COMPOSER; 
-  if (strcmp (common_name, "date") == 0) return TAG_COMMON_DATE; 
-  if (strcmp (common_name, "genre") == 0)  return TAG_COMMON_GENRE; 
-  if (strcmp (common_name, "title") == 0)  return TAG_COMMON_TITLE; 
-  if (strcmp (common_name, "track") == 0) return TAG_COMMON_TRACK; 
-  if (strcmp (common_name, "year") == 0)  return TAG_COMMON_YEAR; 
+  if (strcmp (common_name, "album") == 0)  return TAG_COMMON_ALBUM;
+  if (strcmp (common_name, "album-artist") == 0)
+    return TAG_COMMON_ALBUM_ARTIST;
+  if (strcmp (common_name, "artist") == 0)  return TAG_COMMON_ARTIST;
+  if (strcmp (common_name, "comment") == 0) return TAG_COMMON_COMMENT;
+  if (strcmp (common_name, "composer") == 0)  return TAG_COMMON_COMPOSER;
+  if (strcmp (common_name, "date") == 0) return TAG_COMMON_DATE;
+  if (strcmp (common_name, "genre") == 0)  return TAG_COMMON_GENRE;
+  if (strcmp (common_name, "title") == 0)  return TAG_COMMON_TITLE;
+  if (strcmp (common_name, "track") == 0) return TAG_COMMON_TRACK;
+  if (strcmp (common_name, "year") == 0)  return TAG_COMMON_YEAR;
   return -1;
   }
 
@@ -273,7 +252,7 @@ int main (int argc, char **argv)
   char opt_exact_name[32];
   char opt_cover_filename[512];
 
-  static struct option long_options[] = 
+  static struct option long_options[] =
     {
     {"help", no_argument, &opt_help, 0},
     {"longhelp", no_argument, &opt_longhelp, 0},
@@ -294,7 +273,7 @@ int main (int argc, char **argv)
   while (1)
     {
     int option_index = 0;
-    int opt = getopt_long (argc, argv, "?vhdc:Ce:so:", long_options, 
+    int opt = getopt_long (argc, argv, "?vhdc:Ce:so:", long_options,
       &option_index);
     if (opt == -1) break;
     switch (opt)
@@ -321,14 +300,14 @@ int main (int argc, char **argv)
           {
           strncpy (opt_common_name, optarg, sizeof (opt_common_name));
           }
-        else if (strcmp (long_options[option_index].name, 
+        else if (strcmp (long_options[option_index].name,
              "cover-filename") == 0)
           {
           strncpy (opt_common_name, optarg, sizeof (opt_cover_filename));
           }
         else if (strcmp (long_options[option_index].name, "common-only") == 0)
           {
-          opt_common_only = TRUE;	
+          opt_common_only = TRUE;
           }
         else if (strcmp (long_options[option_index].name, "exact-name") == 0)
           {
@@ -348,16 +327,16 @@ int main (int argc, char **argv)
       case '?': case 'h':
         opt_help = TRUE;
         break;
-      case 'c': 
+      case 'c':
         strncpy (opt_common_name, optarg, sizeof (opt_common_name));
         break;
-      case 'o': 
+      case 'o':
         strncpy (opt_cover_filename, optarg, sizeof (opt_cover_filename));
         break;
-      case 'C': 
-        opt_common_only = TRUE; 
+      case 'C':
+        opt_common_only = TRUE;
         break;
-      case 'e': 
+      case 'e':
         strncpy (opt_exact_name, optarg, sizeof (opt_exact_name));
         break;
       }
@@ -366,17 +345,17 @@ int main (int argc, char **argv)
   if (opt_version)
     {
     printf ("gettags version %s\nCopyright (c)2011-2018 Kevin Boone\n"
-      "Distributed under the terms of the GNU Public Licence, v3.0\n", 
+      "Distributed under the terms of the GNU Public Licence, v3.0\n",
       VERSION);
     exit (0);
     }
-  
+
   if (opt_help)
     {
     print_short_usage(argv[0]);
     exit (0);
     }
-  
+
   if (opt_longhelp)
     {
     print_long_usage(argv[0]);
@@ -386,21 +365,21 @@ int main (int argc, char **argv)
   if (opt_debug)
     tag_debug = TRUE;
 
-  TagCommonID common_id = -1; 
+  TagCommonID common_id = -1;
   if (strlen (opt_common_name) > 0)
     {
     if (strcmp (opt_common_name, "help") == 0)
       {
-      printf 
+      printf
        ("%s: common names: album album-artist artist comment composer date"
-          " genre title track\n", 
-          argv[0]); 
+          " genre title track\n",
+          argv[0]);
       return 0;
       }
-    common_id = common_name_to_common_id (opt_common_name);    
+    common_id = common_name_to_common_id (opt_common_name);
     if (common_id == -1)
       {
-      fprintf (stderr, "%s: unknown common name '%s'\n", 
+      fprintf (stderr, "%s: unknown common name '%s'\n",
         argv[0], opt_common_name);
       fprintf (stderr, "'%s --common-name help' for a list\n", argv[0]);
       return -1;
@@ -409,13 +388,13 @@ int main (int argc, char **argv)
 
   if (common_id != -1 && strlen (opt_exact_name) > 0)
     {
-    fprintf (stderr, 
+    fprintf (stderr,
       "'%s: ignoring common name because exact name was supplied\n", argv[0]);
     }
 
   if (optind == argc)
     {
-    fprintf (stderr, 
+    fprintf (stderr,
       "%s%s: No files specified\n", make_prefix (FALSE, opt_script), argv[0]);
     }
   else
@@ -423,12 +402,10 @@ int main (int argc, char **argv)
     int i;
     for (i = optind; i < argc; i++)
       {
-      do_file (argv[0], argv[i], opt_script, common_id, 
+      do_file (argv[0], argv[i], opt_script, common_id,
         opt_exact_name, opt_common_only, opt_cover_filename);
       }
     }
 
   return 0;
   }
-
-
