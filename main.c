@@ -159,8 +159,6 @@ void do_file (const char *argv0, const char *filename, BOOL script,
           (tag_data, common_id);
         if (s)
           printf ("%s%s\n", make_prefix(TRUE, script), s);
-        else
-          fprintf (stderr, "%sTag not found\n", make_prefix(FALSE, script));
         }
       else
         {
@@ -208,8 +206,7 @@ void do_file (const char *argv0, const char *filename, BOOL script,
       }
       break;
     default:
-      fprintf (stderr, "%s%s: Internal error processing file '%s'\n",
-        make_prefix(FALSE, script), argv0, filename);
+	exit (0);
     }
   tag_free_tag_data (tag_data);
   }
